@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:numtanrice/utility/normal_dialog.dart';
+import 'package:numtanrice/widget/my_service.dart';
 import 'package:numtanrice/widget/rdgister.dart';
 
 class Authen extends StatefulWidget {
@@ -10,6 +15,8 @@ class Authen extends StatefulWidget {
 class _AuthenState extends State<Authen> {
 // Field
 
+  String user, password;
+
 // Method
   Widget singInButton() {
     return RaisedButton(
@@ -18,8 +25,51 @@ class _AuthenState extends State<Authen> {
         'Sing In',
         style: TextStyle(color: Colors.green),
       ),
-      onPressed: () {},
+      onPressed: () {
+        if (user == null ||
+            user.isEmpty ||
+            password == null ||
+            password.isEmpty) {
+          normalDialog(
+              context, 'มีช่องว่าง', 'กรอกดิทุกช่องด้วย พูดไม่รู้เรื่องไง');
+        } else {
+          checkAuthen();
+        }
+      },
     );
+  }
+
+  Future<void> checkAuthen() async {
+    try {
+      String url =
+          'https://www.androidthai.in.th/rice/getUserWhereUserNumtan.php?isAdd=true&User=$user';
+
+      var reponse = await Dio().get(url);
+      print('reponse ===> $reponse');
+
+      if (reponse.toString() == 'null') {
+        normalDialog(context, 'User False', 'ไม่มี User $user บนฐานข้อมูล');
+      } else {
+        var result = json.decode(reponse.data);
+        print('result ==> $result');
+
+        for (var map in result) {
+          String truePassword = map['Password'];
+          String nameLogin = map['Name'];
+
+          if (password == truePassword) {
+            MaterialPageRoute route = MaterialPageRoute(
+              builder: (context) => Myservice(
+                name: nameLogin,
+              ),
+            );
+            Navigator.of(context).pushAndRemoveUntil(route, (value) => false);
+          } else {
+            normalDialog(context, 'Password False', 'กรอก Password ใหม่มันผิด');
+          }
+        }
+      }
+    } catch (e) {}
   }
 
   Widget singUpButton() {
@@ -55,6 +105,7 @@ class _AuthenState extends State<Authen> {
     return Container(
       width: 250.0,
       child: TextField(
+        onChanged: (value) => user = value.trim(),
         decoration: InputDecoration(
           labelText: 'User :',
           border: OutlineInputBorder(),
@@ -67,6 +118,7 @@ class _AuthenState extends State<Authen> {
     return Container(
       width: 250.0,
       child: TextField(
+        onChanged: (value) => password = value.trim(),
         obscureText: true,
         decoration: InputDecoration(
           labelText: 'Password :',
