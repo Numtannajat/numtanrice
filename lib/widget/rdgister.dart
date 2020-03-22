@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   // Field
+  File file;
 
   // Method
 
@@ -34,7 +37,7 @@ class _RegisterState extends State<Register> {
     );
   }
 
-   Widget userForm() {
+  Widget userForm() {
     Color color = Colors.red[300];
     String title = 'Username :';
     String help = 'Type Your Username In Blank';
@@ -55,7 +58,7 @@ class _RegisterState extends State<Register> {
     );
   }
 
-   Widget passwordForm() {
+  Widget passwordForm() {
     Color color = Colors.orange[400];
     String title = 'Password :';
     String help = 'Type Your Password In Blank';
@@ -77,11 +80,30 @@ class _RegisterState extends State<Register> {
   }
 
   Widget showAvatar() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.3,
-      width: MediaQuery.of(context).size.width,
-      child: Image.asset('images/avartar.png'),
+    return GestureDetector(
+      onTap: () {
+        print('You Click Image');
+        cameraThread();
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.3,
+        width: MediaQuery.of(context).size.width,
+        child: file == null ? Image.asset('images/avartar.png'): Image.file(file) ,
+      ),
     );
+  }
+
+  Future<void> cameraThread() async {
+    try {
+      var object = await ImagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800.0,
+        maxHeight: 800.0,
+      );
+      setState(() {
+        file = object;
+      });
+    } catch (e) {}
   }
 
   Widget registerButton() {
