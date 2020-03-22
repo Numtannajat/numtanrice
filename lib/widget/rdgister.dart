@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:numtanrice/utility/normal_dialog.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   // Field
   File file;
+  String name, user, password, urlPath;
 
   // Method
 
@@ -21,6 +23,7 @@ class _RegisterState extends State<Register> {
     String title = 'Name :';
     String help = 'Type Your Name In Blank';
     return TextField(
+      onChanged: (value) => name = value.trim(),
       decoration: InputDecoration(
         enabledBorder:
             UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -42,6 +45,7 @@ class _RegisterState extends State<Register> {
     String title = 'Username :';
     String help = 'Type Your Username In Blank';
     return TextField(
+      onChanged: (value) => user = value.trim(),
       decoration: InputDecoration(
         enabledBorder:
             UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -63,6 +67,7 @@ class _RegisterState extends State<Register> {
     String title = 'Password :';
     String help = 'Type Your Password In Blank';
     return TextField(
+      onChanged: (value) => password = value.trim(),
       decoration: InputDecoration(
         enabledBorder:
             UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -88,7 +93,8 @@ class _RegisterState extends State<Register> {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.3,
         width: MediaQuery.of(context).size.width,
-        child: file == null ? Image.asset('images/avartar.png'): Image.file(file) ,
+        child:
+            file == null ? Image.asset('images/avartar.png') : Image.file(file),
       ),
     );
   }
@@ -112,7 +118,18 @@ class _RegisterState extends State<Register> {
         Icons.cloud_upload,
         size: 30,
       ),
-      onPressed: () {},
+      onPressed: () {
+        if (file == null) {
+          normalDialog(context, 'Non Choose Avatar', 'โปรดเลือกรูปภาพ');
+        } else if (name == null ||
+            name.isEmpty ||
+            user == null ||
+            user.isEmpty ||
+            password == null ||
+            password.isEmpty) {
+          normalDialog(context, 'Have space', 'โปรดกรอกข้อมูลให้ครบถ้วน');
+        } else {}
+      },
     );
   }
 
